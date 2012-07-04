@@ -120,8 +120,8 @@ class Newsletter(models.Model):
     def _send_contact(self, base_url, contact):
         unsubscribe = reverse('newsletter_newsletter_unsubscribe',kwargs={'nid':self.uuid,'cid':contact.uuid})
         preview = reverse('newsletter_newsletter_preview',kwargs={'nid':self.uuid,'cid':contact.uuid})
-        tracking = reverse('newsletter_newsletter_tracking',kwargs={'nid':nid,'cid':cid})
-        subscribe = reverse('newsletter_newsletter_subscribe',kwargs={'nid':nid,'cid':cid})
+        tracking = reverse('newsletter_newsletter_tracking',kwargs={'nid':self.uuid,'cid':contact.uuid})
+        subscribe = reverse('newsletter_newsletter_subscribe',kwargs={'nid':self.uuid,'cid':contact.uuid})
 
         d = {
             'contact':contact,
