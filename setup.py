@@ -22,7 +22,7 @@ setup(name='mobileapart.django.newsletter',
 
       author=newsletter.__author__,
       author_email=newsletter.__email__,
-      url=newsletter.__url__,
+      url='https://github.com/ledil/mobileapart-django-newsletter'
 
       license=newsletter.__license__,
       packages=find_packages(exclude=['demo']),
