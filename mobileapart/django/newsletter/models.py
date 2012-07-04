@@ -125,7 +125,7 @@ class Newsletter(models.Model):
 
         d = {
             'contact':contact,
-            'data':self.dictionary,
+            'data':simplejson.loads(self.dictionary),
             'preview_link': base_url+preview,
             'unsubscribe_link': base_url+unsubscribe,
             'tracking_link': base_url+tracking,
