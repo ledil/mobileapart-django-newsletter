@@ -20,7 +20,15 @@ def view_newsletter_unsubscribe(request, nid, cid):
         newsletter.mailing_list.unsubscribers.add(contact)
     except:
         already_unsubscribed = True
-        contact = newsletter.mailing_list.unsubscribers.get(uuid=cid)
+
+        contact = newsletter.mailing_list.unsubscribers.filter(uuid=cid)
+        if (contact.count() == 0):
+            contact = newsletter.test_contacts.filter(uuid=cid)
+            if (contact.count() == 0):
+                raise Http404()
+
+        contact = contact[0]                
+
     return render_to_response('newsletter/unsubscribed.html',{
         'newsletter':newsletter,
         'contact':contact,
@@ -30,17 +38,24 @@ def view_newsletter_unsubscribe(request, nid, cid):
 # tracking
 def view_newsletter_tracking(request, nid, cid):
     newsletter = get_object_or_404(Newsletter, uuid=nid)
+
     contact = newsletter.mailing_list.subscribers.filter(uuid=cid)
-    if (contact.count() == 1):
-        m = newsletter.stats.filter(contact__uuid=cid)
-        if (m.count() == 0):
-            m = MailingStats(contact=contact[0],sent=True, opened=datetime.now(), smtp_error='')
-            m.save()
-            newsletter.stats.add(m)
-        else:
-            m = m[0]
-            m.opened = datetime.now()
-            m.save()
+    if (contact.count() == 0):
+        contact = newsletter.mailing_list.unsubscribers.filter(uuid=cid)
+        if (contact.count() == 0):
+            contact = newsletter.test_contacts.filter(uuid=cid)
+            if (contact.count() == 0):
+                raise Http404()
+
+    m = newsletter.stats.filter(contact__uuid=cid)
+    if (m.count() == 0):
+        m = MailingStats(contact=contact[0],sent=True, opened=datetime.now(), smtp_error='')
+        m.save()
+        newsletter.stats.add(m)
+    else:
+        m = m[0]
+        m.opened = datetime.now()
+        m.save()
     return HttpResponse(base64.b64decode('R0lGODlhAQABAIAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='), mimetype='image/gif')
 
 # subscribe
@@ -56,11 +71,14 @@ def view_newsletter_preview(request, nid, cid):
     newsletter = get_object_or_404(Newsletter, uuid=nid)
 
     base_url = "http://"+Site.objects.get_current().domain
+
     contact = newsletter.mailing_list.subscribers.filter(uuid=cid)
     if (contact.count() == 0):
         contact = newsletter.mailing_list.unsubscribers.filter(uuid=cid)
         if (contact.count() == 0):
-            raise Http404()
+            contact = newsletter.test_contacts.filter(uuid=cid)
+            if (contact.count() == 0):
+                raise Http404()
 
     unsubscribe = reverse('newsletter_newsletter_unsubscribe',kwargs={'nid':nid,'cid':cid})
     subscribe = reverse('newsletter_newsletter_subscribe',kwargs={'nid':nid,'cid':cid})

@@ -6,7 +6,7 @@ from mobileapart.django import newsletter
 
 
 setup(name='mobileapart.django.newsletter',
-      version="0.5",
+      version="0.6",
       description='A Django app for sending newsletter by email to a contact list.',
       long_description='A Django app for sending newsletter by email to a contact list.',
       keywords='django, newsletter, mailing',
