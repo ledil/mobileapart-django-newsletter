@@ -5,6 +5,7 @@ from django.template import RequestContext, Context
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.core.urlresolvers import reverse
+from django.utils.simplejson import simplejson
 import traceback
 import base64
 from datetime import datetime
@@ -87,7 +88,7 @@ def view_newsletter_preview(request, nid, cid):
 
     d = {
         'contact':contact,
-        'data':newsletter.dictionary,
+        'data':simplejson.loads(newsletter.dictionary),
         'preview_link': base_url+preview,
         'unsubscribe_link': base_url+unsubscribe,
         'subscribe_link': base_url+subscribe,
