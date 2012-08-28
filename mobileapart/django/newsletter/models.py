@@ -154,6 +154,13 @@ class Newsletter(models.Model):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
 
+    def send_all(self):
+        all_contacts = self.mailing_list.subscribers.all()
+        base_url = "http://"+Site.objects.get_current().domain
+
+        for contact in all_contacts:
+            self._send_contact(base_url, contact)
+
     def send_test(self):
         all_contacts = self.test_contacts.all()
         base_url = "http://"+Site.objects.get_current().domain
